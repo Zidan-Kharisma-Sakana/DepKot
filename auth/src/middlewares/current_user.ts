@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
+import { BadRequestError } from "../errors";
 
 interface UserPayload {
   id: string;
@@ -24,10 +25,14 @@ export const currentUser = (
   }
 
   try {
-    const payload = jwt.verify(req.session.jwt, "NicoNicoNii") as UserPayload;
-    console.log(payload);
+    const payload = jwt.verify(
+      req.session.jwt,
+      process.env.JWT_KEY!
+    ) as UserPayload;
     req.currentUser = payload;
-  } catch (err) {}
+  } catch (err) {
+    throw new BadRequestError("No current user is found!");
+  }
 
   next();
 };

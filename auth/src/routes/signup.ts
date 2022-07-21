@@ -15,10 +15,7 @@ router.post(
       .withMessage("password must be provided"),
   ],
   async (req: Request, res: Response) => {
-    const err = validationResult(req);
-    if (!err.isEmpty()) {
-      return res.status(400).send(err.array());
-    }
+
 
     const { email, password } = req.body;
     const existingUser = await User.findOne({ email: email });
@@ -35,7 +32,7 @@ router.post(
         id: user.id,
         email: user.email,
       },
-      "NicoNicoNii"
+      process.env.JWT_KEY!
     );
 
     console.log(userjwt);
