@@ -1,8 +1,9 @@
 import { Router, Request, Response } from "express";
-import { body, validationResult } from "express-validator";
+import { body } from "express-validator";
 import { BadRequestError } from "../errors";
 import { User } from "../models/user";
 import Jwt from "jsonwebtoken";
+import { validateRequest } from "../middlewares/validate_request";
 const router = Router();
 
 router.post(
@@ -14,9 +15,8 @@ router.post(
       .isLength({ min: 4 })
       .withMessage("password must be provided"),
   ],
+  validateRequest,
   async (req: Request, res: Response) => {
-
-
     const { email, password } = req.body;
     const existingUser = await User.findOne({ email: email });
     if (!!existingUser) {
@@ -34,9 +34,6 @@ router.post(
       },
       process.env.JWT_KEY!
     );
-
-    console.log(userjwt);
-
     req.session = {
       jwt: userjwt,
     };
