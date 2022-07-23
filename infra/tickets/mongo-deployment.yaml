@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tickets-mongo-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tickets-mongo
+  template:
+    metadata:
+      labels:
+        app: tickets-mongo
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: tickets-mongo
+        image: mongo:4.0-xenial
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "1"
+          requests:
+            memory: "64Mi"
+            cpu: "0.1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tickets-mongo-service
+spec:
+  selector:
+    app: tickets-mongo
+  ports:
+  - name: db
+    protocol: TCP
+    port: 27017
+    targetPort: 27017

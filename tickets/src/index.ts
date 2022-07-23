@@ -13,9 +13,9 @@ const start = async () => {
     if (!!err) {
       console.log(err.message);
     } else {
-      console.log("Auth service connected to mongodb");
+      console.log("Tickets service connected to mongodb");
       app.listen(3000, () => {
-        console.log("Auth service is up on port 3000 aa");
+        console.log("Tickets service is up on port 3000");
       });
     }
   });
