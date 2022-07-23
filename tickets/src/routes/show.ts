@@ -1,11 +1,12 @@
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
 import { NotFoundError, validateRequest } from "@zpyon/common";
+import { Ticket } from "../models/tickets";
 
 const router = express.Router();
 
 router.post("/api/tickets/:id", async (req: Request, res: Response) => {
-  const ticket = req.params.id;
+  const ticket = await Ticket.findById(req.params.id);
 
   if (!ticket) {
     throw new NotFoundError();
@@ -13,3 +14,5 @@ router.post("/api/tickets/:id", async (req: Request, res: Response) => {
 
   res.send(ticket);
 });
+
+export { router as ShowTicketRouter };

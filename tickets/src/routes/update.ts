@@ -7,6 +7,7 @@ import {
   NotFoundError,
   validateRequest,
 } from "@zpyon/common";
+import { Ticket } from "../models/tickets";
 
 const router = express.Router();
 
@@ -21,8 +22,8 @@ router.put(
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    const ticket: any = req.params.id;
-
+    const ticket = await Ticket.findById(req.params.id);
+    const { title, price } = req.body;
     if (!ticket) {
       throw new NotFoundError();
     }
@@ -35,6 +36,15 @@ router.put(
       throw new NotAuthorizedError();
     }
 
+    ticket.set({
+      title,
+      price,
+    });
+
+    await ticket.save();
+
     res.send(ticket);
   }
 );
+
+export { router as UpdateTicketRouter };
