@@ -1,9 +1,8 @@
 import { Router, Request, Response } from "express";
 import { body } from "express-validator";
-import { BadRequestError } from "../errors";
+import { BadRequestError, validateRequest } from "@zpyon/common";
 import { User } from "../models/user";
 import Jwt from "jsonwebtoken";
-import { validateRequest } from "../middlewares/validate_request";
 const router = Router();
 
 router.post(

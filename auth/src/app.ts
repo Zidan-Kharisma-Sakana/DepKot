@@ -6,8 +6,7 @@ import {
   SignOutRouter,
   SignUpRouter,
 } from "./routes";
-import { errorHandler } from "./middlewares/error_handler";
-import { NotFoundError } from "./errors";
+import { errorHandler, NotFoundError } from "@zpyon/common";
 import cookieSession from "cookie-session";
 
 const app = express();

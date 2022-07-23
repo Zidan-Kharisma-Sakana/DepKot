@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 
 import { Password } from "../services/password";
 import { User } from "../models/user";
-import { BadRequestError } from "../errors";
+import { BadRequestError } from "@zpyon/common";
 
 const router = express.Router();
 

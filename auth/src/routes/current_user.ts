@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { currentUser } from "../middlewares/current_user";
+import { currentUser } from "@zpyon/common";
 const router = Router();
 
 router.get("/api/users/currentuser", currentUser, (req, res) => {
