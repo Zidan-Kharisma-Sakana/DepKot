@@ -1,8 +1,11 @@
+import mongoose from "mongoose";
 import request from "supertest";
 import { app } from "../../app";
 
 it("show a ticket: return 404 for unidentified ticket", async () => {
-  await request(app).get("/api/tickets/blbabnla").send().expect(404);
+  const id = new mongoose.Types.ObjectId().toHexString();
+
+  await request(app).get(`/api/tickets/${id}`).send().expect(404);
 });
 
 it("show a ticket: returns a ticket if found", async () => {

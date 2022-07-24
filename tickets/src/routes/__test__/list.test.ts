@@ -5,7 +5,7 @@ const createTicket = () => {
   return request(app).post('/api/tickets').set('Cookie', global.signin()).send({
     title: 'asldkf',
     price: 20,
-  });
+  }).expect(201)
 };
 
 it('can fetch a list of tickets', async () => {

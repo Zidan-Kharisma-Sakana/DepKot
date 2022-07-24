@@ -2,25 +2,25 @@ import request from "supertest";
 import { app } from "../../app";
 import { Ticket } from "../../models/tickets";
 
-const post = request(app).post("/api/tickets");
 
 it("create ticket: must sign in to create ticket", async () => {
-  await post.send({}).expect(401);
+  const r = await  request(app).post("/api/tickets").send({});
+  expect(r.status).toEqual(401)
 });
 
 it("create ticket: return anything other than 401 when signed in", async () => {
-  await post.set("Cookie", global.signin()).send({});
+  await  request(app).post("/api/tickets").set("Cookie", global.signin()).send({});
 });
 
 it("create ticket: need valid title and price", async () => {
-  await post
+  await  request(app).post("/api/tickets")
     .set("Cookie", global.signin())
     .send({
       price: 10,
     })
     .expect(400);
 
-  await post
+  await  request(app).post("/api/tickets")
     .set("Cookie", global.signin())
     .send({
       title: "",

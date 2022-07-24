@@ -1,13 +1,14 @@
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
-import { currentUser, validateRequest } from "@zpyon/common";
+import { validateRequest } from "@zpyon/common";
+import { requireAuth } from "@zpyon/common/build/middlewares/require_auth";
 import { Ticket } from "../models/tickets";
 
 const router = express.Router();
 
 router.post(
   "/api/tickets",
-  currentUser,
+  requireAuth,
   [
     body("title").not().isEmpty().withMessage("Title is required"),
     body("price")
@@ -24,7 +25,7 @@ router.post(
     });
     await ticket.save();
 
-    res.status(201).send();
+    res.status(201).send(ticket);
   }
 );
 

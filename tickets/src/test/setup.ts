@@ -46,6 +46,6 @@ global.signin = () => {
   const sessionJSON = JSON.stringify(session);
 
   const base64 = Buffer.from(sessionJSON).toString('base64');
-  console.log(base64)
-  return [`express:sess=${base64}`];
+
+  return [`session=${base64}`];
 };
