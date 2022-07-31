@@ -9,6 +9,8 @@ import {
 } from "@zpyon/common";
 import { Ticket } from "../models/tickets";
 import { requireAuth } from "@zpyon/common/build/middlewares/require_auth";
+import { TicketUpdatedPublisher } from "../events/publisher/ticket-updated";
+import { natsWrapper } from "../nats";
 
 const router = express.Router();
 
@@ -43,7 +45,12 @@ router.put(
     });
 
     await ticket.save();
-
+    new TicketUpdatedPublisher(natsWrapper.client).publish({
+      id: ticket.id,
+      title: ticket.title,
+      price: ticket.price,
+      userId: ticket.userId,
+    });
     res.send(ticket);
   }
 );

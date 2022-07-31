@@ -3,7 +3,8 @@ import { body } from "express-validator";
 import { validateRequest } from "@zpyon/common";
 import { requireAuth } from "@zpyon/common/build/middlewares/require_auth";
 import { Ticket } from "../models/tickets";
-
+import { TicketCreatedPublisher } from "../events/publisher/ticket-created";
+import { natsWrapper } from "../nats";
 const router = express.Router();
 
 router.post(
@@ -24,6 +25,13 @@ router.post(
       userId: req.currentUser!.id,
     });
     await ticket.save();
+
+    new TicketCreatedPublisher(natsWrapper.client).publish({
+      id: ticket.id,
+      price: ticket.price,
+      title: ticket.title,
+      userId: ticket.userId,
+    });
 
     res.status(201).send(ticket);
   }
