@@ -1,5 +1,6 @@
 import request from 'supertest';
 import { app } from '../../app';
+jest.mock('../../nats.ts')
 
 const createTicket = () => {
   return request(app).post('/api/tickets').set('Cookie', global.signin()).send({

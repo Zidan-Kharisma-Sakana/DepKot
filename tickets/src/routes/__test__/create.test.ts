@@ -2,7 +2,7 @@ import request from "supertest";
 import { app } from "../../app";
 import { Ticket } from "../../models/tickets";
 
-
+jest.mock('../../nats.ts')
 it("create ticket: must sign in to create ticket", async () => {
   const r = await  request(app).post("/api/tickets").send({});
   expect(r.status).toEqual(401)

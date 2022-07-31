@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import request from "supertest";
 import { app } from "../../app";
+jest.mock('../../nats.ts')
 
 it("show a ticket: return 404 for unidentified ticket", async () => {
   const id = new mongoose.Types.ObjectId().toHexString();
