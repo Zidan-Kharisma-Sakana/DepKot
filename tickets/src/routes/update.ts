@@ -8,7 +8,7 @@ import {
   validateRequest,
 } from "@zpyon/common";
 import { Ticket } from "../models/tickets";
-import { requireAuth } from "@zpyon/common/build/middlewares/require_auth";
+import { requireAuth } from "@zpyon/common";
 import { TicketUpdatedPublisher } from "../events/publisher/ticket-updated";
 import { natsWrapper } from "../nats";
 

@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
 import { validateRequest } from "@zpyon/common";
-import { requireAuth } from "@zpyon/common/build/middlewares/require_auth";
+import { requireAuth } from "@zpyon/common";
 import { Ticket } from "../models/tickets";
 import { TicketCreatedPublisher } from "../events/publisher/ticket-created";
 import { natsWrapper } from "../nats";
