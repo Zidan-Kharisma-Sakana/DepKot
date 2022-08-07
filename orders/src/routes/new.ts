@@ -1,9 +1,17 @@
 import mongoose from "mongoose";
 import express, { Request, Response } from "express";
-import { BadRequestError, NotFoundError, OrderStatus, validateRequest } from "@zpyon/common";
+import {
+  BadRequestError,
+  NotFoundError,
+  OrderStatus,
+  requireAuth,
+  validateRequest,
+} from "@zpyon/common";
 import { body } from "express-validator";
 import { Ticket } from "../models/ticket";
 import { Order } from "../models/order";
+import { OrderCreatedPublisher } from "../events/publisher/order-created";
+import { natsWrapper } from "../nats";
 
 const router = express.Router();
 
@@ -11,6 +19,7 @@ const EXPIRATION_WINDOW_SECONDS = 15 * 60;
 
 router.post(
   "/api/orders",
+  requireAuth,
   [
     body("ticketId")
       .not()
@@ -42,6 +51,18 @@ router.post(
       ticket,
     });
     await order.save();
+    
+    new OrderCreatedPublisher(natsWrapper.client).publish({
+      id: order.id,
+      version: order.version,
+      status: order.status,
+      userId: order.userId,
+      expiresAt: order.expiresAt.toISOString(),
+      ticket: {
+        id: ticket.id,
+        price: ticket.price,
+      },
+    });
 
     res.status(201).send();
   }
