@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-mongo-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: orders-mongo
+  template:
+    metadata:
+      labels:
+        app: orders-mongo
+    spec:
+      restartPolicy: Always
+      containers:
+      - name: orders-mongo
+        image: mongo:4.0-xenial
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "1"
+          requests:
+            memory: "64Mi"
+            cpu: "0.1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: orders-mongo-service
+spec:
+  selector:
+    app: orders-mongo
+  ports:
+  - name: db
+    protocol: TCP
+    port: 27017
+    targetPort: 27017
