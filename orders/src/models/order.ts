@@ -1,7 +1,7 @@
-import mongoose from 'mongoose';
-import { OrderStatus } from '@zpyon/common';
-import { TicketDoc } from './ticket';
-
+import mongoose from "mongoose";
+import { OrderStatus } from "@zpyon/common";
+import { TicketDoc } from "./ticket";
+import { updateIfCurrentPlugin } from "mongoose-update-if-current";
 export { OrderStatus };
 
 interface OrderAttrs {
@@ -40,7 +40,7 @@ const orderSchema = new mongoose.Schema(
     },
     ticket: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Ticket',
+      ref: "Ticket",
     },
   },
   {
@@ -53,12 +53,12 @@ const orderSchema = new mongoose.Schema(
   }
 );
 
-orderSchema.set('versionKey', 'version');
+orderSchema.set("versionKey", "version");
 
 orderSchema.statics.build = (attrs: OrderAttrs) => {
   return new Order(attrs);
 };
 
-const Order = mongoose.model<OrderDoc, OrderModel>('Order', orderSchema);
+const Order = mongoose.model<OrderDoc, OrderModel>("Order", orderSchema);
 
 export { Order };
