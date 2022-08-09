@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import { natsWrapper } from "./nats";
 
 import { app } from "./app";
+import { OrderCreatedListener } from "./events/listener/order-created";
+import { OrderCancelledListener } from "./events/listener/order-cancelled";
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
@@ -29,6 +31,9 @@ const start = async () => {
     });
     process.on("SIGINT", () => natsWrapper.client.close());
     process.on("SIGTERM", () => natsWrapper.client.close());
+    new OrderCreatedListener(natsWrapper.client).listen();
+    new OrderCancelledListener(natsWrapper.client).listen();
+    
   } catch (err) {
     console.error(err);
   }
