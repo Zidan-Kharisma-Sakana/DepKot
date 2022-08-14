@@ -1,56 +1,72 @@
 import request from "supertest";
 import { app } from "../../app";
 import mongoose from "mongoose";
-import { Ticket } from "../../models/tickets";
-jest.mock('../../nats.ts')
+jest.mock("../../nats.ts");
 
-it("returns a 404 if the provided id does not exist", async () => {
+const title = "asldkfj";
+const price = 100;
+const qty = 10;
+const description = "Lorem ipsum";
+
+it("update: returns a 404 if the provided id does not exist", async () => {
   const id = new mongoose.Types.ObjectId().toHexString();
+  const { cookie } = await global.signin();
   await request(app)
-    .put(`/api/tickets/${id}`)
-    .set("Cookie", global.signin())
+    .put(`/api/products/${id}`)
+    .set("Cookie", cookie)
     .send({
-      title: "aslkdfj",
-      price: 20,
+      title,
+      price,
+      qty,
+      description,
     })
     .expect(404);
 });
 
-it("returns a 401 if the user is not authenticated", async () => {
+it("update: returns a 401 if the user is not authenticated", async () => {
   const id = new mongoose.Types.ObjectId().toHexString();
-  await request(app)
-    .put(`/api/tickets/${id}`)
-    .send({
-      title: "aslkdfj",
-      price: 20,
-    })
-    .expect(401);
+  const response = await request(app).put(`/api/products/${id}`).send({
+    title,
+    price,
+    qty,
+    description,
+  });
+  console.log(response.body);
+  expect(response.statusCode).toEqual(401);
 });
 
-it("returns a 401 if the user does not own the ticket", async () => {
+it("update: returns a 401 if the user does not own the ticket", async () => {
+  const { cookie } = await global.signin();
+
   const response = await request(app)
-    .post("/api/tickets")
-    .set("Cookie", global.signin())
+    .post("/api/products")
+    .set("Cookie", cookie)
     .send({
-      title: "asldkfj",
-      price: 20,
+      title,
+      price,
+      qty,
+      description,
     });
 
+  const { cookie: cookie2 } = await global.signin();
+
   await request(app)
-    .put(`/api/tickets/${response.body.id}`)
-    .set("Cookie", global.signin())
+    .put(`/api/products/${response.body.id}`)
+    .set("Cookie", cookie2)
     .send({
-      title: "alskdjflskjdf",
-      price: 1000,
+      title,
+      price,
+      qty,
+      description,
     })
     .expect(401);
 });
 
-it("returns a 400 if the user provides an invalid title or price", async () => {
-  const cookie = global.signin();
+it("update: returns a 400 if the user provides an invalid title or price", async () => {
+  const { cookie } = await global.signin();
 
   const response = await request(app)
-    .post("/api/tickets")
+    .post("/api/products")
     .set("Cookie", cookie)
     .send({
       title: "asldkfj",
@@ -58,7 +74,7 @@ it("returns a 400 if the user provides an invalid title or price", async () => {
     });
 
   await request(app)
-    .put(`/api/tickets/${response.body.id}`)
+    .put(`/api/products/${response.body.id}`)
     .set("Cookie", cookie)
     .send({
       title: "",
@@ -67,7 +83,7 @@ it("returns a 400 if the user provides an invalid title or price", async () => {
     .expect(400);
 
   await request(app)
-    .put(`/api/tickets/${response.body.id}`)
+    .put(`/api/products/${response.body.id}`)
     .set("Cookie", cookie)
     .send({
       title: "alskdfjj",
@@ -76,56 +92,40 @@ it("returns a 400 if the user provides an invalid title or price", async () => {
     .expect(400);
 });
 
-it("updates the ticket provided valid inputs", async () => {
-  const cookie = global.signin();
+it("update: updates the product provided valid inputs", async () => {
+  const { cookie } = await global.signin();
 
   const response = await request(app)
-    .post("/api/tickets")
+    .post("/api/products")
     .set("Cookie", cookie)
     .send({
-      title: "asldkfj",
-      price: 20,
+      title,
+      price,
+      qty,
+      description,
     });
 
+  expect(response.statusCode).toEqual(201);
+
+  const latestProduct = {
+    title: "Latest Product",
+    price: 100,
+    qty: 20,
+    description: "new description",
+  };
+
   await request(app)
-    .put(`/api/tickets/${response.body.id}`)
+    .put(`/api/products/${response.body.id}`)
     .set("Cookie", cookie)
-    .send({
-      title: "new title",
-      price: 100,
-    })
+    .send(latestProduct)
     .expect(200);
 
-  const ticketResponse = await request(app)
-    .get(`/api/tickets/${response.body.id}`)
+  const product = await request(app)
+    .get(`/api/products/${response.body.id}`)
     .send();
 
-  expect(ticketResponse.body.title).toEqual("new title");
-  expect(ticketResponse.body.price).toEqual(100);
-});
-
-it("rejects updates if the ticket is reserved", async () => {
-  const cookie = global.signin();
-
-  const response = await request(app)
-    .post("/api/tickets")
-    .set("Cookie", cookie)
-    .send({
-      title: "asldkfj",
-      price: 20,
-    });
-
-  const ticket = await Ticket.findById(response.body.id);
-  const id = new mongoose.Types.ObjectId().toHexString();
-  ticket!.set({ orderId: id });
-  await ticket!.save();
-
-  await request(app)
-    .put(`/api/tickets/${response.body.id}`)
-    .set("Cookie", cookie)
-    .send({
-      title: "new title",
-      price: 100,
-    })
-    .expect(400);
+  expect(product.body.title).toEqual(latestProduct.title);
+  expect(product.body.price).toEqual(latestProduct.price);
+  expect(product.body.qty).toEqual(latestProduct.qty);
+  expect(product.body.description).toEqual(latestProduct.description);
 });
