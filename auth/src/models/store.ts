@@ -13,6 +13,7 @@ interface StoreModel extends mongoose.Model<StoreDoc> {
 export interface StoreDoc extends mongoose.Document {
   store_name: string;
   store_number: string;
+  couriers: string[];
   address: string;
   user: UserDoc;
 }
@@ -23,6 +24,7 @@ const StoreSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    couriers: [String],
     store_number: {
       type: String,
     },
