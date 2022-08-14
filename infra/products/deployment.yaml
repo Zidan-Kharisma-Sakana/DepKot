@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tickets-deployment
+  name: products-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: tickets
+      app: products
   template:
     metadata:
       labels:
-        app: tickets
+        app: products
     spec:
       containers:
-        - name: tickets
-          image: zidanpyon/tickets
+        - name: products
+          image: zidanpyon/products
           env:
             - name: NATS_URL
               value: "http://nats-srv:4222"
@@ -27,7 +27,7 @@ spec:
             - name: JWT_KEY
               value: "NicoNicoNii"
             - name: MONGO_URI
-              value: "mongodb://tickets-mongo-service:27017/tickets"
+              value: "mongodb://products-mongo-service:27017/products"
           resources:
             limits:
               memory: "512Mi"
@@ -39,12 +39,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: tickets-service
+  name: products-service
 spec:
   selector:
-    app: tickets
+    app: products
   ports:
-    - name: tickets
+    - name: products
 
       protocol: TCP
       port: 3000

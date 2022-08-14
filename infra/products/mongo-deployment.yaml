@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tickets-mongo-deployment
+  name: products-mongo-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: tickets-mongo
+      app: products-mongo
   template:
     metadata:
       labels:
-        app: tickets-mongo
+        app: products-mongo
     spec:
       restartPolicy: Always
       containers:
-      - name: tickets-mongo
+      - name: products-mongo
         image: mongo:4.0-xenial
         imagePullPolicy: IfNotPresent
         resources:
@@ -28,10 +28,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: tickets-mongo-service
+  name: products-mongo-service
 spec:
   selector:
-    app: tickets-mongo
+    app: products-mongo
   ports:
   - name: db
     protocol: TCP
