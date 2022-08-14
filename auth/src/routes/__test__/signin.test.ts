@@ -17,6 +17,7 @@ it("signin: fails when an incorrect password is supplied", async () => {
     .send({
       email: "test@test.com",
       password: "password",
+      username: "Zidan",
     })
     .expect(201);
 
@@ -35,6 +36,7 @@ it("signin: responds with a cookie when given valid credentials", async () => {
     .send({
       email: "test@test.com",
       password: "password",
+      username: "Zidan",
     })
     .expect(201);
 

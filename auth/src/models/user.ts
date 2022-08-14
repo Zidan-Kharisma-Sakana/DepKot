@@ -54,6 +54,14 @@ const userSchema = new mongoose.Schema(
         delete ret._id;
         delete ret.password;
         delete ret.__v;
+        ret.buyer = {
+          ...ret.buyer,
+          user: undefined
+        }
+        ret.store = {
+          ...ret.store,
+          user: undefined
+        }
       },
     },
   }
