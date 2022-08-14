@@ -2,9 +2,7 @@ import express, { Request, Response } from "express";
 import { body } from "express-validator";
 import { validateRequest } from "@zpyon/common";
 import { requireAuth } from "@zpyon/common";
-import { Ticket } from "../models/tickets";
-import { TicketCreatedPublisher } from "../events/publisher/ticket-created";
-import { natsWrapper } from "../nats";
+import { Product } from "../models/product";
 const router = express.Router();
 
 router.post(
@@ -19,22 +17,12 @@ router.post(
   validateRequest,
   async (req: Request, res: Response) => {
     const { title, price } = req.body;
-    const ticket = Ticket.build({
-      title,
-      price,
-      userId: req.currentUser!.id,
+    const product = Product.build({
+      
     });
     await ticket.save();
 
-    new TicketCreatedPublisher(natsWrapper.client).publish({
-      id: ticket.id,
-      price: ticket.price,
-      title: ticket.title,
-      userId: ticket.userId,
-      version: ticket.version,
-    });
-
-    res.status(201).send(ticket);
+    res.status(201).send(product);
   }
 );
 
