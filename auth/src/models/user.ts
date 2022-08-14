@@ -1,25 +1,35 @@
-import mongoose, { CallbackWithoutResultAndOptionalError } from "mongoose";
+import mongoose from "mongoose";
 import { Password } from "../services/password";
+import { BuyerDoc } from "./buyer";
+import { StoreDoc } from "./store";
 
 // properties to create a new User
 interface UserAttrs {
   email: string;
   password: string;
+  username: string;
 }
 
 // properties that a User Model has
-interface UserModel extends mongoose.Model<UserDoc> {
+ interface UserModel extends mongoose.Model<UserDoc> {
   build(attrs: UserAttrs): UserDoc;
 }
 
 // properties that a User Document has
-interface UserDoc extends mongoose.Document {
+export interface UserDoc extends mongoose.Document {
   email: string;
   password: string;
+  username: string;
+  buyer?: BuyerDoc;
+  store?: StoreDoc
 }
 
 const userSchema = new mongoose.Schema(
   {
+    username: {
+      type: String,
+      required: true,
+    },
     email: {
       type: String,
       required: true,
@@ -28,6 +38,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    buyer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Buyer",
+    },
+    store : {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Store",
+    }
   },
   {
     toJSON: {
