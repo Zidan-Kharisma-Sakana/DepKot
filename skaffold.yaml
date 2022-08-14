@@ -24,8 +24,8 @@ build:
         manual:
           - dest: .
             src: "**/*.ts*"
-    - image: zidanpyon/tickets
-      context: tickets
+    - image: zidanpyon/products
+      context: products
       docker:
         dockerfile: Dockerfile
       sync:
