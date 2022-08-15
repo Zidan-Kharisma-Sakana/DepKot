@@ -1,32 +1,26 @@
 import mongoose from "mongoose";
-import { StoreDoc } from "./store";
 
 interface ProductAttributes {
-  store: StoreDoc;
+  store_id: string;
   title: string;
   price: number;
-  description: string;
   qty: number;
 }
 
 interface ProductDoc extends mongoose.Document {
-  store: StoreDoc;
+  store_id: string;
   title: string;
   price: number;
   qty: number;
-  description: string;
-  order_id?: string[];
 }
 interface ProductModel extends mongoose.Model<ProductDoc> {
   build(attrs: ProductAttributes): ProductDoc;
-  findByTitle(keyword: string): Promise<ProductDoc[] | null>;
 }
 
 const ProductSchema = new mongoose.Schema(
   {
-    store: {
+    store_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Store",
       required: true,
     },
     title: {
@@ -37,19 +31,10 @@ const ProductSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    description: {
-      type: String,
-      required: true,
-    },
     qty: {
       type: Number,
       required: true,
     },
-    order_id: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-      },
-    ],
   },
   {
     toJSON: {
@@ -65,15 +50,6 @@ ProductSchema.set("versionKey", "version");
 ProductSchema.statics.build = (attrs: ProductAttributes) => {
   return new Product({
     ...attrs,
-  });
-};
-
-ProductSchema.statics.findByTitle = (keyword: string) => {
-  if (!keyword) {
-    return Product.find({});
-  }
-  return Product.find({
-    title: { $regex: new RegExp(keyword, "i") },
   });
 };
 
