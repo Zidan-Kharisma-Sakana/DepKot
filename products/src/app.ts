@@ -7,6 +7,8 @@ import { CreateProductRouter } from "./routes/create";
 import { ShowProductRouter } from "./routes/show";
 import { ListProductRouter } from "./routes";
 import { UpdateProductRouter } from "./routes/update";
+import { ListStoreRouter } from "./routes/store/list";
+import { ShowStoreRouter } from "./routes/store/show";
 
 const app = express();
 app.set("trust proxy", true); // karena pakai nginx
@@ -21,6 +23,8 @@ app.use(
 );
 app.use(currentUser);
 
+app.use(ListStoreRouter);
+app.use(ShowStoreRouter);
 app.use(CreateProductRouter);
 app.use(ShowProductRouter);
 app.use(ListProductRouter);

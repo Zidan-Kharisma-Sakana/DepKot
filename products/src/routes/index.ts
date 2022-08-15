@@ -8,7 +8,9 @@ const router = express.Router();
 router.get("/api/products", async (req: Request, res: Response) => {
   // list all products
 
-  const product = await Product.find({});
+  const query = req.query;
+  const keyword = (query.search as string) ?? "";
+  const product = await Product.findByTitle(keyword);
   res.send(product);
 });
 
