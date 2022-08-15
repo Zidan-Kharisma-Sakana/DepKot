@@ -1,6 +1,7 @@
 import request from "supertest";
 import { app } from "../../app";
 import { Product } from "../../models/product";
+import { Store } from "../../models/store";
 
 jest.mock("../../nats.ts");
 it("create: must sign in to create product", async () => {
@@ -17,7 +18,7 @@ it("create: creates a product succesfully", async () => {
   const qty = 10;
   const description = "Lorem ipsum";
 
-  const { cookie } = await global.signin();
+  const { cookie, store_id } = await global.signin();
 
   await request(app)
     .post("/api/products")
@@ -32,4 +33,8 @@ it("create: creates a product succesfully", async () => {
 
   products = await Product.find({});
   expect(products.length).toEqual(1);
+
+  const store = await Store.findById(store_id);
+  expect(store).toBeDefined();
+  expect(store?.products.length).toEqual(1);
 });
