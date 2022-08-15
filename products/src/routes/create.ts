@@ -1,29 +1,50 @@
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
-import { validateRequest } from "@zpyon/common";
+import { NotFoundError, validateRequest } from "@zpyon/common";
 import { requireAuth } from "@zpyon/common";
 import { Product } from "../models/product";
+import { Store } from "../models/store";
 const router = express.Router();
 
 router.post(
-  "/api/tickets",
+  "/api/products",
   requireAuth,
   [
     body("title").not().isEmpty().withMessage("Title is required"),
     body("price")
       .isFloat({ gt: 0 })
       .withMessage("Price must be greater than 0"),
+    body("description").not().isEmpty().withMessage("Description is required"),
+    body("qty")
+      .isFloat({ gt: 0 })
+      .withMessage("Quantity must be greater than 0"),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    const { title, price } = req.body;
+    const { title, price, qty, description } = req.body;
+    const store_id = req.currentUser?.store_id ?? "";
+    const store = await Store.findById(store_id);
+    if (!store) {
+      throw new Error("Store isn't found");
+    }
     const product = Product.build({
-      
+      store,
+      title,
+      price,
+      qty,
+      description,
     });
-    await ticket.save();
+    await product.save();
+    const store_products = store.products;
+    store_products.push(product._id);
+    store.set({
+      products: store_products,
+    });
+
+    await store.save();
 
     res.status(201).send(product);
   }
 );
 
-export { router as CreateTicketRouter };
+export { router as CreateProductRouter };

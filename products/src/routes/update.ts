@@ -1,59 +1,52 @@
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
 import {
-  BadRequestError,
-  currentUser,
   NotAuthorizedError,
   NotFoundError,
   validateRequest,
 } from "@zpyon/common";
-import { Ticket } from "../models/tickets";
 import { requireAuth } from "@zpyon/common";
-import { TicketUpdatedPublisher } from "../events/publisher/ticket-updated";
-import { natsWrapper } from "../nats";
+
+import { Product } from "../models/product";
 
 const router = express.Router();
 
 router.put(
-  "/api/tickets/:id",
+  "/api/products/:id",
   requireAuth,
   [
     body("title").not().isEmpty().withMessage("Title is required"),
     body("price")
       .isFloat({ gt: 0 })
-      .withMessage("Price must be provided and must be greater than 0"),
+      .withMessage("Price must be greater than 0"),
+    body("description").not().isEmpty().withMessage("Description is required"),
+    body("qty")
+      .isFloat({ gt: 0 })
+      .withMessage("Quantity must be greater than 0"),
   ],
   validateRequest,
   async (req: Request, res: Response) => {
-    const ticket = await Ticket.findById(req.params.id);
-    const { title, price } = req.body;
-    if (!ticket) {
+    console.log(req.currentUser);
+    const product = await Product.findById(req.params.id).populate("store");
+    const { title, price, description, qty } = req.body;
+    if (!product) {
       throw new NotFoundError();
     }
-
-    if (ticket.orderId) {
-      throw new BadRequestError("Cannot Edit a reserved ticket");
-    }
-
-    if (ticket.userId !== req.currentUser!.id) {
+    if (product.store._id.toString() !== req.currentUser!.store_id) {
       throw new NotAuthorizedError();
     }
 
-    ticket.set({
+    product.set({
       title,
       price,
+      description,
+      qty,
     });
 
-    await ticket.save();
-    new TicketUpdatedPublisher(natsWrapper.client).publish({
-      id: ticket.id,
-      title: ticket.title,
-      price: ticket.price,
-      userId: ticket.userId,
-      version: ticket.version,
-    });
-    res.send(ticket);
+    await product.save();
+
+    res.send(product);
   }
 );
 
-export { router as UpdateTicketRouter };
+export { router as UpdateProductRouter };

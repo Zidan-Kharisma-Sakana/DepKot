@@ -1,18 +1,15 @@
 import express, { Request, Response } from "express";
 import { body } from "express-validator";
 import { validateRequest } from "@zpyon/common";
-import { Ticket } from "../models/tickets";
+import { Product } from "../models/product";
 
 const router = express.Router();
 
-router.get("/api/tickets", async (req: Request, res: Response) => {
-  // list all tickets
+router.get("/api/products", async (req: Request, res: Response) => {
+  // list all products
 
-  const tickets = await Ticket.find({
-    orderId: undefined,
-  });
-
-  res.send(tickets);
+  const product = await Product.find({});
+  res.send(product);
 });
 
-export { router as ListTicketRouter };
+export { router as ListProductRouter };

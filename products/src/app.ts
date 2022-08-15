@@ -3,10 +3,10 @@ import "express-async-errors";
 
 import { currentUser, errorHandler, NotFoundError } from "@zpyon/common";
 import cookieSession from "cookie-session";
-import { CreateTicketRouter } from "./routes/create";
-import { ShowTicketRouter } from "./routes/show";
-import { ListTicketRouter } from "./routes";
-import { UpdateTicketRouter } from "./routes/update";
+import { CreateProductRouter } from "./routes/create";
+import { ShowProductRouter } from "./routes/show";
+import { ListProductRouter } from "./routes";
+import { UpdateProductRouter } from "./routes/update";
 
 const app = express();
 app.set("trust proxy", true); // karena pakai nginx
@@ -21,10 +21,10 @@ app.use(
 );
 app.use(currentUser);
 
-app.use(CreateTicketRouter);
-app.use(ShowTicketRouter);
-app.use(ListTicketRouter);
-app.use(UpdateTicketRouter);
+app.use(CreateProductRouter);
+app.use(ShowProductRouter);
+app.use(ListProductRouter);
+app.use(UpdateProductRouter);
 
 app.all("*", async (req, res) => {
   throw new NotFoundError();
