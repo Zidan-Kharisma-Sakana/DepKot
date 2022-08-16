@@ -1,17 +1,21 @@
 import mongoose from "mongoose";
+import { StoreDoc } from "./store";
 
 interface ProductAttributes {
-  store_id: string;
+  store: StoreDoc;
   title: string;
   price: number;
+  description: string;
   qty: number;
 }
 
 interface ProductDoc extends mongoose.Document {
-  store_id: string;
+  store: StoreDoc;
   title: string;
   price: number;
   qty: number;
+  description: string;
+  order_id?: string[];
 }
 interface ProductModel extends mongoose.Model<ProductDoc> {
   build(attrs: ProductAttributes): ProductDoc;
@@ -19,8 +23,9 @@ interface ProductModel extends mongoose.Model<ProductDoc> {
 
 const ProductSchema = new mongoose.Schema(
   {
-    store_id: {
+    store: {
       type: mongoose.Schema.Types.ObjectId,
+      ref: "Store",
       required: true,
     },
     title: {
@@ -31,10 +36,19 @@ const ProductSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    description: {
+      type: String,
+      required: true,
+    },
     qty: {
       type: Number,
       required: true,
     },
+    order_id: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+      },
+    ],
   },
   {
     toJSON: {

@@ -24,9 +24,9 @@ export interface ReceiverDoc extends mongoose.Document {
 }
 export const SenderSchema = new mongoose.Schema({
   store_id: mongoose.Schema.Types.ObjectId,
-  store_name: String,
-  store_address: String,
-  store_number: String,
+  sender_name: String,
+  sender_address: String,
+  sender_number: String,
 });
 export interface SenderDoc extends mongoose.Document {
   store_id: string;
