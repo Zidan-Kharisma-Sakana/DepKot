@@ -1,15 +1,16 @@
 import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
-
-declare global {
-  var signin: () => string[];
-}
+import { Store, StoreDoc } from "../models/store";
 
 jest.mock("../nats.ts");
 
 declare global {
-  var signin: () => string[];
+  var signin: () => Promise<{
+    cookie: string[];
+    store_id: string;
+    store: StoreDoc;
+  }>;
 }
 
 let mongo: any;
@@ -38,11 +39,20 @@ afterAll(async () => {
   await mongoose.connection.close();
 });
 
-global.signin = () => {
+global.signin = async () => {
+  // Build a JWT payload.  { id, email }
+  const store_id = new mongoose.Types.ObjectId().toHexString();
   const payload = {
     id: new mongoose.Types.ObjectId().toHexString(),
     email: "test@test.com",
+    store_id,
   };
+
+  const store = Store.build({
+    store_id,
+    store_name: "Zidan",
+  });
+  await store.save();
 
   const token = jwt.sign(payload, process.env.JWT_KEY!);
 
@@ -52,5 +62,9 @@ global.signin = () => {
 
   const base64 = Buffer.from(sessionJSON).toString("base64");
 
-  return [`session=${base64}`];
+  return {
+    cookie: [`session=${base64}`],
+    store_id,
+    store,
+  };
 };
