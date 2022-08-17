@@ -5,15 +5,18 @@ import { Order } from "../models/order";
 const router = express.Router();
 
 router.get(
-  "/api/orders/:orderId",
+  "/api/orders/:order_id",
   requireAuth,
   async (req: Request, res: Response) => {
-    const order = await Order.findById(req.params.orderId).populate("ticket");
+    const order = await Order.findById(req.params.order_id);
 
     if (!order) {
       throw new NotFoundError();
     }
-    if (order.userId !== req.currentUser!.id) {
+    if (
+      order.buyer_id.toString() !== req.currentUser!.buyer_id &&
+      order.store_id.toString() !== req.currentUser!.store_id
+    ) {
       throw new NotAuthorizedError();
     }
 
