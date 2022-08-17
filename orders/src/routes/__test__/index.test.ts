@@ -30,7 +30,7 @@ it("list: fetches orders for an particular user", async () => {
   const { cookie: userOne } = await global.signin();
   const { cookie: userTwo } = await global.signin();
   // Create one order as User #1
-  await request(app)
+  let response = await request(app)
     .post("/api/orders")
     .set("Cookie", userOne)
     .send({
@@ -65,8 +65,8 @@ it("list: fetches orders for an particular user", async () => {
     .expect(201);
 
   // Make request to get orders for User #2
-  const response = await request(app)
-    .get("/api/orders")
+  response = await request(app)
+    .get("/api/orders/buyer")
     .set("Cookie", userTwo)
     .expect(200);
 
@@ -74,6 +74,4 @@ it("list: fetches orders for an particular user", async () => {
   expect(response.body.length).toEqual(2);
   expect(response.body[0].id).toEqual(orderOne.id);
   expect(response.body[1].id).toEqual(orderTwo.id);
-  expect(response.body[0].product.id).toEqual(productTwo.id);
-  expect(response.body[1].product.id).toEqual(productThree.id);
 });

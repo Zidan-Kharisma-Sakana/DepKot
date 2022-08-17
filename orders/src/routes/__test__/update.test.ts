@@ -31,9 +31,11 @@ it("delete: let buyer cancel order", async () => {
 
   // make a request to cancel the order
   await request(app)
-    .delete(`/api/orders/${order.id}`)
+    .put(`/api/orders/${order.id}`)
     .set("Cookie", cookie)
-    .send()
+    .send({
+      status: OrderStatus.Cancelled,
+    })
     .expect(204);
 
   // expectation to make sure the thing is cancelled
@@ -68,9 +70,11 @@ it("delete: let store cancel order", async () => {
 
   // make a request to cancel the order
   await request(app)
-    .delete(`/api/orders/${order.id}`)
+    .put(`/api/orders/${order.id}`)
     .set("Cookie", storeCookie)
-    .send()
+    .send({
+      status: OrderStatus.Cancelled,
+    })
     .expect(204);
 
   // expectation to make sure the thing is cancelled
@@ -108,8 +112,10 @@ it("delete: return an error if not authorized", async () => {
   const { cookie: cookie2 } = await global.signin();
 
   await request(app)
-    .delete(`/api/orders/${order.id}`)
+    .put(`/api/orders/${order.id}`)
     .set("Cookie", cookie2)
-    .send()
+    .send({
+      status: OrderStatus.Cancelled,
+    })
     .expect(401);
 });

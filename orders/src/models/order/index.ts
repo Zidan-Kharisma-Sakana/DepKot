@@ -23,7 +23,9 @@ interface OrderAttrs {
 
 interface OrderDoc extends mongoose.Document {
   receiver: ReceiverDoc;
+  buyer_id: string;
   sender: SenderDoc;
+  store_id: string;
   item: ItemDoc;
   qty: number;
   status: string;
@@ -42,8 +44,16 @@ const orderSchema = new mongoose.Schema(
       type: ReceiverSchema,
       required: true,
     },
+    buyer_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
     sender: {
       type: SenderSchema,
+      required: true,
+    },
+    store_id: {
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
     },
     item: {
@@ -84,7 +94,11 @@ const orderSchema = new mongoose.Schema(
 orderSchema.set("versionKey", "version");
 
 orderSchema.statics.build = (attrs: OrderAttrs) => {
-  return new Order(attrs);
+  return new Order({
+    ...attrs,
+    buyer_id: attrs.receiver.buyer_id,
+    store_id: attrs.sender.store_id,
+  });
 };
 
 const Order = mongoose.model<OrderDoc, OrderModel>("Order", orderSchema);
