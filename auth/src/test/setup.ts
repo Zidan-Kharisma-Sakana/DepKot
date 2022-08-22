@@ -5,8 +5,12 @@ import request from "supertest";
 
 declare global {
   var signin: () => Promise<string[]>;
+  var signinWithResponse: () => Promise<{
+    cookie: string[];
+    response: any;
+  }>;
 }
-
+jest.mock("../nats.ts");
 let mongo: any;
 
 beforeAll(async () => {
@@ -36,18 +40,40 @@ afterAll(async () => {
 global.signin = async () => {
   const email = "test@test.com";
   const password = "password";
-  const username = "Zidan"
+  const username = "Zidan";
 
   const response = await request(app)
     .post("/api/users/signup")
     .send({
       email,
       password,
-      username
+      username,
     })
     .expect(201);
 
   const cookie = response.get("Set-Cookie");
 
   return cookie;
+};
+
+global.signinWithResponse = async () => {
+  const email = "test@test.com";
+  const password = "password";
+  const username = "Zidan";
+
+  const response = await request(app)
+    .post("/api/users/signup")
+    .send({
+      email,
+      password,
+      username,
+    })
+    .expect(201);
+
+  const cookie = response.get("Set-Cookie");
+
+  return {
+    cookie,
+    response,
+  };
 };

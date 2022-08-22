@@ -5,6 +5,9 @@ import { User } from "../models/user";
 import Jwt from "jsonwebtoken";
 import { Buyer } from "../models/buyer";
 import { Store } from "../models/store";
+import { BuyerCreatedPublisher } from "../event/publisher/buyer";
+import { natsWrapper } from "../nats";
+import { StoreCreatedPublisher } from "../event/publisher/store";
 const router = Router();
 
 router.post(
@@ -51,6 +54,23 @@ router.post(
     req.session = {
       jwt: userjwt,
     };
+
+    new BuyerCreatedPublisher(natsWrapper.client).publish({
+      id: buyer._id,
+      address: buyer.address,
+      receiver_name: buyer.receiver_name,
+      receiver_number: buyer.receiver_number,
+      user_id: user._id,
+    });
+
+    new StoreCreatedPublisher(natsWrapper.client).publish({
+      id: store._id,
+      address: store.address,
+      store_name: store.store_name,
+      couriers: store.couriers,
+      store_number: store.store_number,
+      user_id: user._id,
+    });
     res.status(201).send(user);
   }
 );

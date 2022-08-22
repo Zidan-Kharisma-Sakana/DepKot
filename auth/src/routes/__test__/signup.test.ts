@@ -2,6 +2,7 @@ import request from "supertest";
 import { app } from "../../app";
 import { Buyer } from "../../models/buyer";
 import { Store } from "../../models/store";
+import { natsWrapper } from "../../nats";
 
 const signupuri = "/api/users/signup";
 
@@ -21,6 +22,7 @@ it("signup: return 201 on succesfully creating user", async () => {
 
   expect(byr).not.toEqual(undefined);
   expect(str).not.toEqual(undefined);
+  expect(natsWrapper.client.publish).toHaveBeenCalled()
 });
 
 it("signup: returns 400 with invalid email and/or password", async () => {
