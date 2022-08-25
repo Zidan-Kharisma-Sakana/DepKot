@@ -57,7 +57,7 @@ global.signin = async () => {
 };
 
 global.signinWithResponse = async () => {
-  const email = "test@test.com";
+  const email = "test2@test.com";
   const password = "password";
   const username = "Zidan";
 
@@ -70,10 +70,9 @@ global.signinWithResponse = async () => {
     })
     .expect(201);
 
-  const cookie = response.get("Set-Cookie");
-
+  const cookie = String(response.get("Set-Cookie")).split(";");
   return {
-    cookie,
-    response,
+    cookie: cookie,
+    response: response,
   };
 };

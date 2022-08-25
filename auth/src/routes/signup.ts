@@ -48,6 +48,8 @@ router.post(
       {
         id: user.id,
         email: user.email,
+        buyer_id: buyer._id,
+        store_id: store._id,
       },
       process.env.JWT_KEY!
     );
