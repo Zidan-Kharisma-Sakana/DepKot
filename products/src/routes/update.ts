@@ -8,6 +8,8 @@ import {
 import { requireAuth } from "@zpyon/common";
 
 import { Product } from "../models/product";
+import { natsWrapper } from "../nats";
+import { ProductUpdatedPublisher } from "../events/publisher/product-updated";
 
 const router = express.Router();
 
@@ -44,6 +46,14 @@ router.put(
     });
 
     await product.save();
+
+    new ProductUpdatedPublisher(natsWrapper.client).publish({
+      id: product._id,
+      price:product.price,
+      title: product.title, 
+      userId: product.store._id, 
+      version: product.__v, 
+    })
 
     res.send(product);
   }

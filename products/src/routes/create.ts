@@ -4,6 +4,8 @@ import { NotFoundError, validateRequest } from "@zpyon/common";
 import { requireAuth } from "@zpyon/common";
 import { Product } from "../models/product";
 import { Store } from "../models/store";
+import { ProductCreatedPublisher } from "../events/publisher/product-created";
+import { natsWrapper } from "../nats";
 const router = express.Router();
 
 router.post(
@@ -42,6 +44,13 @@ router.post(
     });
 
     await store.save();
+    new ProductCreatedPublisher(natsWrapper.client).publish({
+      id: product._id,
+      price: product.price,
+      title: product.title,
+      userId: product.store._id,
+      version: product.__v,
+    });
 
     res.status(201).send(product);
   }

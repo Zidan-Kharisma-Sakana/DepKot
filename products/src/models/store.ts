@@ -1,8 +1,11 @@
 import mongoose from "mongoose";
 
 interface StoreAttrs {
-  store_id: string;
+  _id: string;
   store_name: string;
+  store_number: string;
+  couriers: string[];
+  address: string;
 }
 
 interface StoreModel extends mongoose.Model<StoreDoc> {
@@ -51,7 +54,6 @@ const StoreSchema = new mongoose.Schema(
 StoreSchema.statics.build = (attrs: StoreAttrs) => {
   return new Store({
     ...attrs,
-    _id: attrs.store_id
   });
 };
 

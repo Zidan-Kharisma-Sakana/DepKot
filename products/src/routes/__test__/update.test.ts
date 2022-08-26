@@ -1,6 +1,7 @@
 import request from "supertest";
 import { app } from "../../app";
 import mongoose from "mongoose";
+import { natsWrapper } from "../../nats";
 jest.mock("../../nats.ts");
 
 const title = "asldkfj";
@@ -128,4 +129,5 @@ it("update: updates the product provided valid inputs", async () => {
   expect(product.body.price).toEqual(latestProduct.price);
   expect(product.body.qty).toEqual(latestProduct.qty);
   expect(product.body.description).toEqual(latestProduct.description);
+  expect(natsWrapper.client.publish).toBeCalled()
 });

@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 import { natsWrapper } from "./nats";
 
 import { app } from "./app";
+import { StoreCreatedListener } from "./events/listener/store-created";
+import { StoreUpdatedListener } from "./events/listener/store-updated";
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
@@ -29,6 +31,10 @@ const start = async () => {
     });
     process.on("SIGINT", () => natsWrapper.client.close());
     process.on("SIGTERM", () => natsWrapper.client.close());
+
+    new StoreCreatedListener(natsWrapper.client).listen()
+    new StoreUpdatedListener(natsWrapper.client).listen()
+
   } catch (err) {
     console.error(err);
   }
@@ -36,9 +42,9 @@ const start = async () => {
     if (!!err) {
       console.log(err.message);
     } else {
-      console.log("Tickets service connected to mongodb");
+      console.log("product service connected to mongodb");
       app.listen(3000, () => {
-        console.log("Tickets service is up on port 3000");
+        console.log("product service is up on port 3000");
       });
     }
   });
