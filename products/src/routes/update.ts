@@ -51,8 +51,9 @@ router.put(
       id: product._id,
       price:product.price,
       title: product.title, 
-      userId: product.store._id, 
-      version: product.__v, 
+      storeId: product.store._id,
+      qty: product.qty,
+      description: product.description,
     })
 
     res.send(product);

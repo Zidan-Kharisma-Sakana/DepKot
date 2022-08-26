@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 import { natsWrapper } from "./nats";
 
 import { app } from "./app";
+import { StoreCreatedListener } from "./events/listener/store-created";
+import { StoreUpdatedListener } from "./events/listener/store-updated";
+import { ProductCreatedListener } from "./events/listener/product-created";
+import { ProductUpdatedListener } from "./events/listener/product-updated";
 
 const start = async () => {
   if (!process.env.JWT_KEY) {
@@ -29,6 +33,11 @@ const start = async () => {
     });
     process.on("SIGINT", () => natsWrapper.client.close());
     process.on("SIGTERM", () => natsWrapper.client.close());
+
+    new StoreCreatedListener(natsWrapper.client).listen();
+    new StoreUpdatedListener(natsWrapper.client).listen();
+    new ProductCreatedListener(natsWrapper.client).listen();
+    new ProductUpdatedListener(natsWrapper.client).listen();
     
   } catch (err) {
     console.error(err);

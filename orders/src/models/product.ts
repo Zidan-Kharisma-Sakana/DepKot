@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { StoreDoc } from "./store";
 
 interface ProductAttributes {
+  _id: string;
   store: StoreDoc;
   title: string;
   price: number;

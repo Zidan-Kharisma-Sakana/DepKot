@@ -48,8 +48,9 @@ router.post(
       id: product._id,
       price: product.price,
       title: product.title,
-      userId: product.store._id,
-      version: product.__v,
+      storeId: product.store._id,
+      qty: product.qty,
+      description: product.description,
     });
 
     res.status(201).send(product);
